@@ -1,0 +1,20 @@
+{
+  "name": "snivra-browser-extension",
+  "version": "0.3.1",
+  "description": "A private, local screenshot-to-text extension for Chrome and Edge.",
+  "license": "MIT",
+  "author": "mizontheprogrammer",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@tesseract.js-data/eng": "1.0.0",
+    "tesseract.js": "7.0.0",
+    "tesseract.js-core": "7.0.0"
+  }
+}
