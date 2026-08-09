@@ -72,7 +72,6 @@ npm run build
 Repository structure:
 
 ```text
-assets/       Source icon
 scripts/      Extension build script
 src/          Manifest and popup source
 test/         Automated security and UI checks
