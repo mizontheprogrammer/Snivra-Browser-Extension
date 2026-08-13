@@ -6,6 +6,10 @@
 
 Snivra is a simple Chrome and Edge extension that turns screenshots into editable text. Copy and paste a screenshot, drag in an image, or choose a file; Snivra recognizes the English text locally and lets you copy or download the result.
 
+## How to use Snivra
+
+![Copy a screenshot, paste it into Snivra, then copy or download the recognized text](docs/snivra-how-to.png)
+
 ## Features
 
 - Paste a copied screenshot using the **Paste screenshot** button
@@ -14,6 +18,7 @@ Snivra is a simple Chrome and Edge extension that turns screenshots into editabl
 - Local English OCR powered by Tesseract.js
 - Layout-aware OCR that preserves visual lines, question numbers, option labels, and paragraph spacing
 - Extra punctuation handling for short code and operator answers
+- A second symbol-focused OCR pass for punctuation-heavy multiple-choice answers
 - Editable recognized text
 - Copy the result to the clipboard
 - Download the result as a `.txt` file
@@ -59,6 +64,8 @@ Snivra requests only:
 - `clipboardWrite` — used when you select **Copy text**
 
 Direct `Ctrl + V` uses the browser's normal paste event. Snivra does not request access to websites, tabs, browsing history, downloads, or persistent storage.
+
+The release contains only the extension UI, local OCR code, WebAssembly runtime, and bundled English language model. It does not load remote scripts or execute code downloaded from the internet.
 
 ## Privacy
 
