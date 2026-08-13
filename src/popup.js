@@ -97,9 +97,37 @@ async function recognizeFile(file) {
         message.textContent = `${humanize(update.status)}${value ? ` ${value}%` : ""}`;
       }
     });
-    const result = await worker.recognize(file);
-    output.value = (result.data.text || "").trim();
-    confidence.textContent = Number.isFinite(result.data.confidence) ? `${Math.round(result.data.confidence)}% OCR confidence` : "";
+    await worker.setParameters({
+      tessedit_pageseg_mode: Tesseract.PSM.SINGLE_LINE,
+      preserve_interword_spaces: "1"
+    });
+    const preparedLines = await SnivraOcr.prepareLineImages(file);
+    const recognizedLines = [];
+    const confidences = [];
+
+    if (preparedLines.length) {
+      for (let index = 0; index < preparedLines.length; index += 1) {
+        message.textContent = `Reading line ${index + 1} of ${preparedLines.length}`;
+        const lineResult = await worker.recognize(preparedLines[index].canvas);
+        recognizedLines.push({
+          text: lineResult.data.text,
+          gapBefore: preparedLines[index].gapBefore,
+          height: preparedLines[index].height
+        });
+        if (Number.isFinite(lineResult.data.confidence)) confidences.push(lineResult.data.confidence);
+      }
+      output.value = SnivraOcr.assembleLines(recognizedLines);
+    } else {
+      await worker.setParameters({ tessedit_pageseg_mode: Tesseract.PSM.AUTO });
+      const fallbackResult = await worker.recognize(file);
+      output.value = (fallbackResult.data.text || "").trim();
+      if (Number.isFinite(fallbackResult.data.confidence)) confidences.push(fallbackResult.data.confidence);
+    }
+
+    const averageConfidence = confidences.length
+      ? Math.round(confidences.reduce((sum, value) => sum + value, 0) / confidences.length)
+      : null;
+    confidence.textContent = averageConfidence === null ? "" : `${averageConfidence}% OCR confidence`;
     message.textContent = output.value ? "Text is ready" : "No text was found";
     progress.value = 100;
     copyButton.disabled = !output.value;
