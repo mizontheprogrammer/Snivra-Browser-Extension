@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { normalizeLine, assembleLines } = require("../src/ocr-layout");
+const { normalizeLine, chooseOptionRecognition, assembleLines } = require("../src/ocr-layout");
 
 test("repairs quiz option labels and common operator OCR errors", () => {
   assert.equal(normalizeLine("a. l="), "a. /=");
@@ -31,4 +31,19 @@ test("preserves one visual line per output line and paragraph gaps", () => {
     "2. All php scripts must enclosed with",
     "a. ??"
   ].join("\n"));
+});
+
+test("uses symbol OCR and restores option labels in visual order", () => {
+  assert.equal(chooseOptionRecognition("al", "a. /="), "a. /=");
+  assert.equal(chooseOptionRecognition("bl", "b. //"), "b. //");
+
+  const text = assembleLines([
+    { text: "1. Operators", height: 12, gapBefore: 0 },
+    { text: "a. /=", height: 9, gapBefore: 4 },
+    { text: "b. //", height: 9, gapBefore: 4 },
+    { text: "c. =/", height: 9, gapBefore: 4 },
+    { text: "a. ??", height: 9, gapBefore: 4 }
+  ]);
+
+  assert.equal(text, ["1. Operators", "a. /=", "b. //", "c. =/", "d. ??"].join("\n"));
 });

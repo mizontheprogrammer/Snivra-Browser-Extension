@@ -35,16 +35,46 @@
     return answer;
   }
 
+  function looksLikeOptionLine(value) {
+    const compact = String(value || "").replace(/\s/g, "");
+    return compact.length > 0
+      && compact.length <= 12
+      && (/^[a-dA-D]/.test(compact) || /^[?/=<>!|.'"]+$/.test(compact));
+  }
+
+  function chooseOptionRecognition(primary, symbols) {
+    const choices = [primary, symbols].map((value) => String(value || "").trim()).filter(Boolean);
+    if (!choices.length) return "";
+    return choices.sort((left, right) => optionScore(right) - optionScore(left))[0];
+  }
+
+  function optionScore(value) {
+    const compact = value.replace(/\s/g, "");
+    const answer = compact.replace(/^[a-dA-D][.)]?/, "");
+    const symbolCount = (answer.match(/[?/=<>!|.]/g) || []).length;
+    const letterCount = (answer.match(/[a-z]/gi) || []).length;
+    return (/^[a-dA-D]/.test(compact) ? 5 : 0) + symbolCount * 4 - letterCount * 3;
+  }
+
   function assembleLines(lines) {
     if (!Array.isArray(lines) || lines.length === 0) return "";
     const heights = lines.map((line) => Number(line.height) || 0).filter((height) => height > 0).sort((a, b) => a - b);
     const medianHeight = heights.length ? heights[Math.floor(heights.length / 2)] : 12;
     const paragraphGap = Math.max(14, medianHeight * 1.35);
     const output = [];
+    let expectedOption = null;
 
     for (let index = 0; index < lines.length; index += 1) {
-      const text = normalizeLine(lines[index].text);
+      let text = normalizeLine(lines[index].text);
       if (!text) continue;
+      if (/^\d+\.\s/.test(text)) expectedOption = 0;
+      else if (expectedOption !== null && expectedOption < 4 && looksLikeOptionLine(lines[index].text)) {
+        const rawAnswer = text.replace(/^[a-d]\.\s*/i, "");
+        text = `${String.fromCharCode(97 + expectedOption)}. ${repairSymbolAnswer(rawAnswer)}`.trimEnd();
+        expectedOption += 1;
+      } else if (expectedOption !== null) {
+        expectedOption = null;
+      }
       if (output.length && Number(lines[index].gapBefore) > paragraphGap) output.push("");
       output.push(text);
     }
@@ -153,7 +183,7 @@
     });
   }
 
-  const api = { normalizeLine, repairSymbolAnswer, assembleLines, prepareLineImages };
+  const api = { normalizeLine, repairSymbolAnswer, looksLikeOptionLine, chooseOptionRecognition, assembleLines, prepareLineImages };
   root.SnivraOcr = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);

@@ -109,8 +109,15 @@ async function recognizeFile(file) {
       for (let index = 0; index < preparedLines.length; index += 1) {
         message.textContent = `Reading line ${index + 1} of ${preparedLines.length}`;
         const lineResult = await worker.recognize(preparedLines[index].canvas);
+        let lineText = lineResult.data.text;
+        if (SnivraOcr.looksLikeOptionLine(lineText)) {
+          await worker.setParameters({ tessedit_char_whitelist: "abcdABCD./=?<>!|" });
+          const symbolResult = await worker.recognize(preparedLines[index].canvas);
+          await worker.setParameters({ tessedit_char_whitelist: "" });
+          lineText = SnivraOcr.chooseOptionRecognition(lineText, symbolResult.data.text);
+        }
         recognizedLines.push({
-          text: lineResult.data.text,
+          text: lineText,
           gapBefore: preparedLines[index].gapBefore,
           height: preparedLines[index].height
         });
