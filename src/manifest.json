@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Snivra — Screenshot to Text",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Paste or open a screenshot and turn it into editable text locally.",
   "permissions": ["clipboardRead", "clipboardWrite"],
   "action": {
