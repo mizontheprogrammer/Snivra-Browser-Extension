@@ -16,6 +16,8 @@ test("contains paste, file, OCR, copy, and download controls", () => {
   assert.match(script, /navigator\.clipboard\.read\(\)/);
   assert.match(script, /addEventListener\(["']paste["']/);
   assert.match(script, /worker\.recognize\(file\)/);
+  assert.match(html, /ocr-layout\.js/);
+  assert.match(script, /SnivraOcr\.prepareLineImages/);
 });
 
 test("uses a direct worker and contains no webpage capture code", () => {
