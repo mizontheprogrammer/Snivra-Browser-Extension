@@ -1,6 +1,6 @@
 {
   "name": "snivra-browser-extension",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A private, local screenshot-to-text extension for Chrome and Edge.",
   "license": "MIT",
   "author": "mizontheprogrammer",
