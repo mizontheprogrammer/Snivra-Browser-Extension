@@ -8,7 +8,9 @@ Snivra is a simple Chrome and Edge extension that turns screenshots into editabl
 
 ## How to use Snivra
 
-![Copy a screenshot, paste it into Snivra, then copy or download the recognized text](snivra-how-to.png)
+<p align="center">
+  <img src="snivra-how-to.png" alt="Snivra extension popup for pasting a screenshot" width="400">
+</p>
 
 ## Features
 
